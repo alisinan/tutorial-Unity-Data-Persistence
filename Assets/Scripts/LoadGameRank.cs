@@ -1,18 +1,62 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using System.IO;
 
-public class LoadGameRank : MonoBehaviour
+public class LoadGameRankScript : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+
+    //Fields for display the player info
+
+    public Text BestPlayerName;
+
+
+    //Static variables for holding the best player data
+    private static int BestScore;
+    private static string BestPlayer;
+
+
+    private void Awake()
     {
-        
+        LoadGameRank();
     }
 
-    // Update is called once per frame
-    void Update()
+
+
+    private void SetBestPlayer()
     {
-        
+        if (BestPlayer == null && BestScore == 0)
+        {
+            BestPlayerName.text = "";
+        }
+        else
+        {
+            BestPlayerName.text = $"Best Score - {BestPlayer}: {BestScore}";
+        }
+
+    }
+
+    public void LoadGameRank()
+    {
+        string path = Application.persistentDataPath + "/savefile.json";
+
+        if (File.Exists(path))
+        {
+            string json = File.ReadAllText(path);
+            SaveData data = JsonUtility.FromJson<SaveData>(json);
+
+            BestPlayer = data.TheBestPlayer;
+            BestScore = data.HighiestScore;
+            SetBestPlayer();
+        }
+    }
+
+    [System.Serializable]
+    class SaveData
+    {
+        public int HighiestScore;
+        public string TheBestPlayer;
     }
 }
